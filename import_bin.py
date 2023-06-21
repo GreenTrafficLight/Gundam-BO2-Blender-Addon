@@ -76,6 +76,15 @@ def build_bin(filename, data):
         bm.to_mesh(mesh)
         bm.free()
 
+        # Set normals
+        mesh.use_auto_smooth = True
+
+        if normals != []:
+            try:
+                mesh.normals_split_custom_set_from_vertices(normals)
+            except:
+                pass
+
     ob.rotation_euler = ( radians(90), 0, 0 )
 
 
