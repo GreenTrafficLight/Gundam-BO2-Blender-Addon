@@ -1,3 +1,9 @@
+from ..Utilities import *
+
+from .VTX import *
+
+import os
+
 class BFMDLSUBMESH:
     def __init__(self) -> None:
         self.face_count = 0
@@ -5,6 +11,7 @@ class BFMDLSUBMESH:
         self.stride = 0
         self.vtx_face_buffer_offset = 0
         self.vtx_vertex_buffer_offset = 0
+        self.vtx = None
 
     def read(self, br):
         br.seek(16, 1)
@@ -22,3 +29,10 @@ class BFMDLSUBMESH:
         br.read_short()
         br.read_short()
         br.seek(64, 1)
+
+    def read_vtx(self, filepath):
+        filename = os.path.basename(filepath)
+        vtx_file = open(os.path.dirname(filepath) + "\\" +  filename.replace("_Mdl","_Vtx"), "br")
+        vtx_br = BinaryReader(vtx_file)
+        self.vtx = VTX()
+        self.vtx.read(vtx_br, self)

@@ -37,6 +37,12 @@ class BinaryReader:
 
     def read_ushort(self):
         return struct.unpack(self.endian + "H", self.read(2))[0]
+    
+    def read_ushorts(self, n):
+        ushorts = []
+        for i in range(n):
+            ushorts.append(self.read_ushort())
+        return ushorts
 
     def read_int(self):
         return struct.unpack(self.endian + "i", self.read(4))[0]
@@ -45,10 +51,10 @@ class BinaryReader:
         return struct.unpack(self.endian + "I", self.read(4))[0]
 
     def read_long(self):
-        return struct.unpack(self.endian + "l", self.read(8))[0]
+        return struct.unpack(self.endian + "q", self.read(8))[0]
 
     def read_ulong(self):
-        return struct.unpack(self.endian + "L", self.read(8))[0]
+        return struct.unpack(self.endian + "Q", self.read(8))[0]
 
     def read_bytes(self, size):
         ret = bytearray()
@@ -58,9 +64,21 @@ class BinaryReader:
 
     def read_float(self):
         return struct.unpack(self.endian + "f", self.read(4))[0]
+    
+    def read_floats(self, n):
+        floats = []
+        for i in range(n):
+            floats.append(self.read_float())
+        return floats
 
     def read_half_float(self):
         return float(np.frombuffer(self.read(2), dtype="<e")[0])
+    
+    def read_half_floats(self, n):
+        half_floats = []
+        for i in range(n):
+            half_floats.append(self.read_half_float())
+        return half_floats
 
     def read_double(self):
         return struct.unpack(self.endian + "d", self.read(8))[0]
@@ -94,7 +112,7 @@ class BinaryReader:
     def get_boolean(self, offset):
         save_position = self.tell()
         self.seek(offset)
-        boolean = self.readByte() == 1
+        boolean = self.read_byte() == 1
         self.seek(save_position)
 
         return boolean

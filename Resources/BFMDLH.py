@@ -1,6 +1,8 @@
-from BFMDLNODE import *
-from BFMDLMESH import *
-from BFMDLSUBMESH import *
+from ..Utilities import *
+
+from .BFMDLNODE import *
+from .BFMDLMESH import *
+from .BFMDLSUBMESH import *
 
 class BFMDLH:
 
@@ -18,7 +20,7 @@ class BFMDLH:
         self.bfmdlsubmeshs_count = 0
 
 
-    def read(self, br):
+    def read(self, br, filepath):
         br.seek(24, 1)
         unknown_offset1 = br.read_int()
         vtx_size = br.read_int()
@@ -43,7 +45,7 @@ class BFMDLH:
 
         self.read_bfmdlnodes(br)
         self.read_bfmdlmeshs(br)
-        self.read_bfmdlsubmeshs(br)
+        self.read_bfmdlsubmeshs(br, filepath)
 
     def read_bfmdlnodes(self, br):
         br.seek(self.bfmdlnodes_offset, 0)
@@ -57,13 +59,14 @@ class BFMDLH:
         for i in range(self.bfmdlmeshs_count):
             bfmdlmesh = BFMDLMESH()
             bfmdlmesh.read(br)
-            self.bfmdlnodes.append(bfmdlmesh)
+            self.bfmdlmeshs.append(bfmdlmesh)
 
-    def read_bfmdlsubmeshs(self, br):
+    def read_bfmdlsubmeshs(self, br, filepath):
         br.seek(self.bfmdlsubmeshs_offset, 0)
         for i in range(self.bfmdlsubmeshs_count):
             bfmdlsubmesh = BFMDLSUBMESH()
             bfmdlsubmesh.read(br)
+            bfmdlsubmesh.read_vtx(filepath)
             self.bfmdlsubmeshs.append(bfmdlsubmesh)
 
 
