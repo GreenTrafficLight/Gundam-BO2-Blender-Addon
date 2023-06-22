@@ -28,6 +28,12 @@ class BinaryReader:
 
     def read_byte(self):
         return struct.unpack(self.endian + "b", self.read(1))[0]
+    
+    def read_bytes(self, size):
+        ret = bytearray()
+        for i in range(size):
+            ret.append(self.read_byte())
+        return bytes(ret)
 
     def read_ubyte(self):
         return struct.unpack(self.endian + "B", self.read(1))[0]
@@ -55,12 +61,6 @@ class BinaryReader:
 
     def read_ulong(self):
         return struct.unpack(self.endian + "Q", self.read(8))[0]
-
-    def read_bytes(self, size):
-        ret = bytearray()
-        for i in range(size):
-            ret.append(struct.unpack(self.endian + "B", self.read(1))[0])
-        return bytes(ret)
 
     def read_float(self):
         return struct.unpack(self.endian + "f", self.read(4))[0]

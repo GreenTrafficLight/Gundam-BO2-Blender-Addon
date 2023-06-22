@@ -3,6 +3,7 @@ from ..Utilities import *
 from .BFMDLNODE import *
 from .BFMDLMESH import *
 from .BFMDLSUBMESH import *
+from .SORT import *
 
 class BFMDLH:
 
@@ -10,6 +11,7 @@ class BFMDLH:
         self.bfmdlnodes = []
         self.bfmdlmeshs = []
         self.bfmdlsubmeshs = []
+        self.bfmdlnodes_sort = None
 
         self.bfmdlnodes_offset = 0
         self.bfmdlmeshs_offset = 0
@@ -46,6 +48,14 @@ class BFMDLH:
         self.read_bfmdlnodes(br)
         self.read_bfmdlmeshs(br)
         self.read_bfmdlsubmeshs(br, filepath)
+
+        br.seek(self.sort1_offset, 0)
+        for i in range(self.bfmdlnodes_count):
+            sort = SORT()
+            sort.read(br)
+            self.bfmdlnodes_sort = sort 
+
+        print("test")
 
     def read_bfmdlnodes(self, br):
         br.seek(self.bfmdlnodes_offset, 0)

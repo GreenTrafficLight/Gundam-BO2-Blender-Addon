@@ -20,23 +20,30 @@ def build_bin(filename, data):
     armature = ob.data
     armature.name = str(filename)
 
+    for index, bfmdlnode in enumerate(data.bfmdlnodes):
+        pass
+
+
     for index, bfmdlmesh in enumerate(data.bfmdlmeshs):
 
-        mesh = bpy.data.meshes.new(str(index))
-        obj = bpy.data.objects.new(str(index), mesh)
+        bfmdlmesh_empty = add_empty(str(index))
+        bfmdlmesh_empty.parent = ob
 
-        bpy.context.collection.objects.link(obj)
+        for i in range(bfmdlmesh.start_index, bfmdlmesh.start_index + bfmdlmesh.submeshs_count):
 
-        obj.parent = ob
+            mesh = bpy.data.meshes.new(str(index) + "_" + str(i))
+            obj = bpy.data.objects.new(str(index) + "_" + str(i), mesh)
 
-        vertexList = {}
-        facesList = []
-        normals = []
+            bpy.context.collection.objects.link(obj)
 
-        bm = bmesh.new()
-        bm.from_mesh(mesh)
-        
-        for i in range(bfmdlmesh.start_index, bfmdlmesh.end_index):
+            obj.parent = bfmdlmesh_empty
+
+            vertexList = {}
+            facesList = []
+            normals = []
+
+            bm = bmesh.new()
+            bm.from_mesh(mesh)
 
             bfmdlsubmesh = data.bfmdlsubmeshs[i]
 
@@ -60,30 +67,30 @@ def build_bin(filename, data):
                 except:
                     pass
 
-            # if bfmdlsubmesh.vtx.uvs != []:
+            if bfmdlsubmesh.vtx.uvs != []:
 
-            #     uv_name = "UV1Map"
-            #     uv_layer1 = bm.loops.layers.uv.get(uv_name) or bm.loops.layers.uv.new(uv_name)
+                uv_name = "UV1Map"
+                uv_layer1 = bm.loops.layers.uv.get(uv_name) or bm.loops.layers.uv.new(uv_name)
 
-            #     for f in bm.faces:
-            #         for l in f.loops:
-            #             if l.vert.index >= last_vertex_count:
-            #                 l[uv_layer1].uv = [bfmdlsubmesh.vtx.uvs[l.vert.index - last_vertex_count][0], 1 - bfmdlsubmesh.vtx.uvs[l.vert.index - last_vertex_count][1]]
+                for f in bm.faces:
+                    for l in f.loops:
+                        if l.vert.index >= last_vertex_count:
+                            l[uv_layer1].uv = [bfmdlsubmesh.vtx.uvs[l.vert.index - last_vertex_count][0], 1 - bfmdlsubmesh.vtx.uvs[l.vert.index - last_vertex_count][1]]
 
 
-            last_vertex_count += len(bfmdlsubmesh.vtx.positions)
+            # last_vertex_count += len(bfmdlsubmesh.vtx.positions)
 
-        bm.to_mesh(mesh)
-        bm.free()
+            bm.to_mesh(mesh)
+            bm.free()
 
-        # Set normals
-        mesh.use_auto_smooth = True
+            # Set normals
+            mesh.use_auto_smooth = True
 
-        if normals != []:
-            try:
-                mesh.normals_split_custom_set_from_vertices(normals)
-            except:
-                pass
+            if normals != []:
+                try:
+                    mesh.normals_split_custom_set_from_vertices(normals)
+                except:
+                    pass
 
     ob.rotation_euler = ( radians(90), 0, 0 )
 

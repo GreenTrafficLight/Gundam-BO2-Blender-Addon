@@ -16,9 +16,10 @@ class SORT:
         unknown_offset = br.read_int()
         br.seek(4, 1)
         
-        # br.seek(self.position + names_offset, 1)
-        # for i in range(name_count):
-        #     self.names.append(br.bytes_to_string(br.read_bytes(16)))
+        br.seek(self.position + names_offset, 0)
+        print(br.tell())
+        for i in range(name_count):
+            self.names.append(br.bytes_to_string(br.read_bytes(16)))
 
         # br.seek(self.position + unknown_offset, 1)
         # for i in range(name_count):
