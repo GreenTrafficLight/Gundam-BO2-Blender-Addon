@@ -49,11 +49,11 @@ class BFMDLH:
         self.read_bfmdlmeshs(br)
         self.read_bfmdlsubmeshs(br, filepath)
 
-        br.seek(self.sort1_offset, 0)
-        for i in range(self.bfmdlnodes_count):
-            sort = SORT()
-            sort.read(br)
-            self.bfmdlnodes_sort = sort 
+        # br.seek(self.sort1_offset, 0)
+        # for i in range(self.bfmdlnodes_count):
+        #     sort = SORT()
+        #     sort.read(br)
+        #     self.bfmdlnodes_sort = sort 
 
         print("test")
 

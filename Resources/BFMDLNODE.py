@@ -1,3 +1,5 @@
+from mathutils import *
+
 from ..Utilities import *
 
 class BFMDLNODE:
@@ -5,7 +7,7 @@ class BFMDLNODE:
         self.scale = None
         self.translation = None
         self.rotation = None
-        self.parent_ID = -1
+        self.parent_index = -1
 
     def read(self, br):
         br.seek(16, 1)
@@ -13,9 +15,9 @@ class BFMDLNODE:
         br.seek(4, 1)
         self.translation = Vector((br.read_floats(3)))
         br.seek(4, 1)
-        self.rotation = Vector((br.read_floats(3)))
+        self.rotation = Euler((br.read_floats(3)))
         br.seek(4, 1)
-        self.parent_ID = br.read_short()
+        self.parent_index = br.read_short()
         br.read_short()
         br.read_short()
         br.read_short()

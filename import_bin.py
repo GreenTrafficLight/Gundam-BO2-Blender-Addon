@@ -20,9 +20,29 @@ def build_bin(filename, data):
     armature = ob.data
     armature.name = str(filename)
 
-    for index, bfmdlnode in enumerate(data.bfmdlnodes):
-        pass
+    bone_mapping = []
 
+    for index, bfmdlnode in enumerate(data.bfmdlnodes):
+
+        bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+        bone = armature.edit_bones.new("bmdlnode_" + str(index))
+
+        bone.head = (0, 0, 0)
+        bone.tail = (0, 1, 0)
+        
+        if bfmdlnode.parent_index != -1:
+
+            bone.parent = armature.edit_bones["bmdlnode_" + str(bfmdlnode.parent_index)]
+
+    bpy.ops.object.mode_set(mode='POSE')
+    for index, bfmdlnode in enumerate(data.bfmdlnodes):
+        pbone = ob.pose.bones["bmdlnode_" + str(index)]
+        pbone.rotation_mode = 'XYZ'
+        pbone.rotation_euler = bfmdlnode.rotation
+        pbone.location = bfmdlnode.translation
+        bpy.ops.pose.armature_apply()
+
+    bpy.ops.object.mode_set(mode='OBJECT')
 
     for index, bfmdlmesh in enumerate(data.bfmdlmeshs):
 
