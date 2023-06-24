@@ -12,6 +12,7 @@ class BFMDLH:
         self.bfmdlmeshs = []
         self.bfmdlsubmeshs = []
         self.bfmdlnodes_sort = None
+        self.test = []
 
         self.bfmdlnodes_offset = 0
         self.bfmdlmeshs_offset = 0
@@ -61,6 +62,8 @@ class BFMDLH:
         for i in range(self.bfmdlnodes_count):
             bfmdlnode = BFMDLNODE()
             bfmdlnode.read(br)
+            if bfmdlnode.is_bone == 1:
+                self.test.append(i)
             self.bfmdlnodes.append(bfmdlnode)
 
     def read_bfmdlmeshs(self, br):

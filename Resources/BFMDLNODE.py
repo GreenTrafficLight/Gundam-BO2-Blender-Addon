@@ -8,6 +8,10 @@ class BFMDLNODE:
         self.translation = None
         self.rotation = None
         self.parent_index = -1
+        self.child_index = -1
+        self.next_sibling_index = -1
+        self.previous_sibling_index = -1
+        self.is_bone = 0
 
     def read(self, br):
         br.seek(16, 1)
@@ -18,13 +22,13 @@ class BFMDLNODE:
         self.rotation = Euler((br.read_floats(3)), "XYZ")
         br.seek(4, 1)
         self.parent_index = br.read_short()
-        br.read_short()
-        br.read_short()
-        br.read_short()
-        br.read_short()
-        br.read_short()
-        br.read_short()
-        br.read_short()
+        self.child_index = br.read_short()
+        self.next_sibling_index = br.read_short()
+        self.previous_sibling_index = br.read_short()
+        self.unk2 = br.read_short()
+        self.is_bone = br.read_short()
+        self.unk4 = br.read_short()
+        self.unk5 = br.read_short()
         br.seek(64, 1)
         br.seek(64, 1)
 

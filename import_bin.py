@@ -44,13 +44,15 @@ def build_bin(filename, data):
 
     for index, bfmdlmesh in enumerate(data.bfmdlmeshs):
 
-        bfmdlmesh_empty = add_empty(str(index))
+        bfmdlmesh_name = data.bfmdlnodes_sort.names[bfmdlmesh.name_index]
+
+        bfmdlmesh_empty = add_empty(bfmdlmesh_name)
         bfmdlmesh_empty.parent = ob
 
         for i in range(bfmdlmesh.start_index, bfmdlmesh.start_index + bfmdlmesh.submeshs_count):
 
-            mesh = bpy.data.meshes.new(str(index) + "_" + str(i))
-            obj = bpy.data.objects.new(str(index) + "_" + str(i), mesh)
+            mesh = bpy.data.meshes.new(bfmdlmesh_name + "_" + str(i))
+            obj = bpy.data.objects.new(bfmdlmesh_name + "_" + str(i), mesh)
 
             bpy.context.collection.objects.link(obj)
 
@@ -101,15 +103,23 @@ def build_bin(filename, data):
 
             for i in range(len(bfmdlsubmesh.vtx.bone_indices)):
                 if bfmdlsubmesh.vtx.bone_indices != []:
-                    for k, vg in enumerate(bfmdlsubmesh.vtx.bone_indices[i]):
-                        vg_name = bone_mapping[vg + 1]
-                        if not vg_name in obj.vertex_groups:
-                            group = obj.vertex_groups.new(name=vg_name)
-                        else:
-                            group = obj.vertex_groups[vg_name]
-                        weight = 1.0
-                        if weight > 0.0:
-                            group.add([i], weight, 'REPLACE')
+                    vg_name = str(bfmdlsubmesh.vtx.bone_indices[i]) # bone_mapping[data.test[vg]]
+                    if not vg_name in obj.vertex_groups:
+                        group = obj.vertex_groups.new(name=vg_name)
+                    else:
+                        group = obj.vertex_groups[vg_name]
+                    weight = 1.0
+                    if weight > 0.0:
+                        group.add([i], weight, 'REPLACE')
+                    # for k, vg in enumerate(bfmdlsubmesh.vtx.bone_indices[i]):
+                    #     vg_name = str(vg) # bone_mapping[data.test[vg]]
+                    #     if not vg_name in obj.vertex_groups:
+                    #         group = obj.vertex_groups.new(name=vg_name)
+                    #     else:
+                    #         group = obj.vertex_groups[vg_name]
+                    #     weight = 1.0
+                    #     if weight > 0.0:
+                    #         group.add([i], weight, 'REPLACE')
 
             # Set normals
             mesh.use_auto_smooth = True

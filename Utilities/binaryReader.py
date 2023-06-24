@@ -39,10 +39,10 @@ class BinaryReader:
         return struct.unpack(self.endian + "B", self.read(1))[0]
     
     def read_ubytes(self, size):
-        ret = bytearray()
+        ubytes = []
         for i in range(size):
-            ret.append(self.read_ubyte())
-        return bytes(ret)
+            ubytes.append(self.read_ubyte())
+        return ubytes
 
     def read_short(self):
         return struct.unpack(self.endian + "h", self.read(2))[0]
