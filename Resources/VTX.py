@@ -32,7 +32,8 @@ class VTX:
             
             for i in range(bfmdl_submesh.vertex_count):
                 self.positions.append(Vector((br.read_floats(3))))
-                br.seek(8, 1)
+                self.bone_indices.append(br.read_ubytes(4))
+                br.seek(4, 1)
                 self.uvs.append(Vector((br.read_half_floats(2))))
                 br.seek(8, 1)
 

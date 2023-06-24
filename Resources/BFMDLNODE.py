@@ -15,7 +15,7 @@ class BFMDLNODE:
         br.seek(4, 1)
         self.translation = Vector((br.read_floats(3)))
         br.seek(4, 1)
-        self.rotation = Euler((br.read_floats(3)))
+        self.rotation = Euler((br.read_floats(3)), "XYZ")
         br.seek(4, 1)
         self.parent_index = br.read_short()
         br.read_short()

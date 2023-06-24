@@ -24,23 +24,21 @@ def build_bin(filename, data):
 
     for index, bfmdlnode in enumerate(data.bfmdlnodes):
 
+        bone_mapping.append("bmdlnode_" + str(index))
+
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
         bone = armature.edit_bones.new("bmdlnode_" + str(index))
 
         bone.head = (0, 0, 0)
         bone.tail = (0, 1, 0)
+
+        bone.matrix = bfmdlnode.compute_world_transform()
         
         if bfmdlnode.parent_index != -1:
 
             bone.parent = armature.edit_bones["bmdlnode_" + str(bfmdlnode.parent_index)]
+            bone.matrix = armature.edit_bones["bmdlnode_" + str(bfmdlnode.parent_index)].matrix @ bone.matrix
 
-    bpy.ops.object.mode_set(mode='POSE')
-    for index, bfmdlnode in enumerate(data.bfmdlnodes):
-        pbone = ob.pose.bones["bmdlnode_" + str(index)]
-        pbone.rotation_mode = 'XYZ'
-        pbone.rotation_euler = bfmdlnode.rotation
-        pbone.location = bfmdlnode.translation
-        bpy.ops.pose.armature_apply()
 
     bpy.ops.object.mode_set(mode='OBJECT')
 
@@ -56,6 +54,9 @@ def build_bin(filename, data):
 
             bpy.context.collection.objects.link(obj)
 
+            modifier = obj.modifiers.new(armature.name, type="ARMATURE")
+            modifier.object = ob
+
             obj.parent = bfmdlmesh_empty
 
             vertexList = {}
@@ -67,23 +68,21 @@ def build_bin(filename, data):
 
             bfmdlsubmesh = data.bfmdlsubmeshs[i]
 
-            last_vertex_count = 0
-
             for j in range(len(bfmdlsubmesh.vtx.positions)):
 
                 vertex = bm.verts.new(bfmdlsubmesh.vtx.positions[j])
                 
-                vertex.index = last_vertex_count + j
+                vertex.index =  j
 
-                vertexList[last_vertex_count + j] = vertex
+                vertexList[j] = vertex
 
             # Set faces
             faces = bfmdlsubmesh.vtx.face_indices
             for j in range(0, len(bfmdlsubmesh.vtx.face_indices)):
                 try:
-                    face = bm.faces.new([vertexList[faces[j][0] + last_vertex_count], vertexList[faces[j][1] + last_vertex_count], vertexList[faces[j][2] + last_vertex_count]])
+                    face = bm.faces.new([vertexList[faces[j][0]], vertexList[faces[j][1]], vertexList[faces[j][2]]])
                     face.smooth = True
-                    facesList.append([face, [vertexList[faces[j][0] + last_vertex_count], vertexList[faces[j][1] + last_vertex_count], vertexList[faces[j][2]] + last_vertex_count]])
+                    facesList.append([face, [vertexList[faces[j][0]], vertexList[faces[j][1]], vertexList[faces[j][2]]]])
                 except:
                     pass
 
@@ -94,14 +93,23 @@ def build_bin(filename, data):
 
                 for f in bm.faces:
                     for l in f.loops:
-                        if l.vert.index >= last_vertex_count:
-                            l[uv_layer1].uv = [bfmdlsubmesh.vtx.uvs[l.vert.index - last_vertex_count][0], 1 - bfmdlsubmesh.vtx.uvs[l.vert.index - last_vertex_count][1]]
+                        l[uv_layer1].uv = [bfmdlsubmesh.vtx.uvs[l.vert.index][0], 1 - bfmdlsubmesh.vtx.uvs[l.vert.index][1]]
 
-
-            # last_vertex_count += len(bfmdlsubmesh.vtx.positions)
 
             bm.to_mesh(mesh)
             bm.free()
+
+            for i in range(len(bfmdlsubmesh.vtx.bone_indices)):
+                if bfmdlsubmesh.vtx.bone_indices != []:
+                    for k, vg in enumerate(bfmdlsubmesh.vtx.bone_indices[i]):
+                        vg_name = bone_mapping[vg + 1]
+                        if not vg_name in obj.vertex_groups:
+                            group = obj.vertex_groups.new(name=vg_name)
+                        else:
+                            group = obj.vertex_groups[vg_name]
+                        weight = 1.0
+                        if weight > 0.0:
+                            group.add([i], weight, 'REPLACE')
 
             # Set normals
             mesh.use_auto_smooth = True
