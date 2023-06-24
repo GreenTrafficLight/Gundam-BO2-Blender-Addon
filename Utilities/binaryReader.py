@@ -58,6 +58,12 @@ class BinaryReader:
 
     def read_int(self):
         return struct.unpack(self.endian + "i", self.read(4))[0]
+    
+    def read_ints(self, n):
+        ints = []
+        for i in range(n):
+            ints.append(self.read_int())
+        return ints
 
     def read_uint(self):
         return struct.unpack(self.endian + "I", self.read(4))[0]

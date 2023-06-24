@@ -24,10 +24,10 @@ def build_bin(filename, data):
 
     for index, bfmdlnode in enumerate(data.bfmdlnodes):
 
-        bone_mapping.append("bmdlnode_" + str(index))
+        bone_mapping.append(data.bfmdlnodes_sort.names[index])
 
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-        bone = armature.edit_bones.new("bmdlnode_" + str(index))
+        bone = armature.edit_bones.new(data.bfmdlnodes_sort.names[index])
 
         bone.head = (0, 0, 0)
         bone.tail = (0, 1, 0)
@@ -36,8 +36,8 @@ def build_bin(filename, data):
         
         if bfmdlnode.parent_index != -1:
 
-            bone.parent = armature.edit_bones["bmdlnode_" + str(bfmdlnode.parent_index)]
-            bone.matrix = armature.edit_bones["bmdlnode_" + str(bfmdlnode.parent_index)].matrix @ bone.matrix
+            bone.parent = armature.edit_bones[data.bfmdlnodes_sort.names[bfmdlnode.parent_index]]
+            bone.matrix = armature.edit_bones[data.bfmdlnodes_sort.names[bfmdlnode.parent_index]].matrix @ bone.matrix
 
 
     bpy.ops.object.mode_set(mode='OBJECT')
