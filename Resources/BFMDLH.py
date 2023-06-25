@@ -12,6 +12,7 @@ class BFMDLH:
         self.bfmdlmeshs = []
         self.bfmdlsubmeshs = []
         self.bfmdlnodes_sort = None
+        self.materials_sort = None
         self.test = []
 
         self.bfmdlnodes_offset = 0
@@ -40,8 +41,8 @@ class BFMDLH:
         br.read_long()
         br.read_long() # bone indices ?
         br.read_long()
-        self.sort1_offset = br.read_long()
-        self.sort2_offset = br.read_long()
+        sort1_offset = br.read_long()
+        material_sort_offset = br.read_long()
         self.bfmdlnodes_count = br.read_int()
         self.bfmdlmeshs_count = br.read_int()
         self.bfmdlsubmeshs_count = br.read_int()
@@ -50,10 +51,15 @@ class BFMDLH:
         self.read_bfmdlmeshs(br)
         self.read_bfmdlsubmeshs(br, filepath)
 
-        br.seek(self.sort1_offset, 0)
+        br.seek(sort1_offset, 0)
         sort = SORT()
         sort.read(br)
         self.bfmdlnodes_sort = sort 
+
+        br.seek(material_sort_offset, 0)
+        materials_sort = SORT()
+        materials_sort.read(br)
+        self.materials_sort = materials_sort
 
         print("test")
 
